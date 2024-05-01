@@ -1,12 +1,14 @@
 import socket
 from _thread import *
 import pickle
+from AQMController import AQMController
 
-server = "172.26.133.230"
-# server = "192.168.1.43"
+# server = "172.26.133.230"
+server = "192.168.1.120"
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
 try:
     s.bind((server,port))
@@ -16,37 +18,41 @@ except socket.error as e:
 s.listen()
 print("Server Started, Waiting for a connection")
 
+aqmc = AQMController()
+
 connected = set()
 clients = {}
 idCount = 0
 
-def threaded_client(conn, p, clientId):
+def threaded_AQM():
+    global aqmc
+    aqmc.controller()
+    
+
+def threaded_client(conn, clientId):
     global idCount
-    conn.send(str.encode(str(p)))
+    global aqmc
+    conn.send(str.encode(str(clientId)))
     reply = ""
 
     while True:
         try:
             data = conn.recv(4096).decode()
 
-            if clientID in clients:
-                client = clients[clientID]
-
-                if not data:
-                    break
-                else:
-                    if data == "reset":
-                        client.resetWent()
-                    elif data != "get":
-                        client.play(p, data)
-
-                    reply = client
-                    conn.sendall(pickle.dumps(reply))
-
-            else:
+            if not data:
                 break
+            elif data == "get":
+                reply = (aqmc.data_entries,
+                        aqmc.minute_avg,
+                        aqmc.hour_avg,
+                        aqmc.day_avg)
+                conn.sendall(pickle.dumps(reply))
+
         except:
             break
+
+    print(len(pickle.dumps(aqmc)))
+
     print("Lost connection")
     
     try:
@@ -58,19 +64,14 @@ def threaded_client(conn, p, clientId):
     idCount -= 1
     conn.close()
 
+
+start_new_thread(threaded_AQM,())
+
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
 
     idCount += 1
-    p = 0
-    clientID = (idCount - 1)//2
-    if idCount % 2 == 1:
-        clients[clientID] = Client(clientID)
-        print("Creating a new client...\nID: ", clientID)
-    else:
-        clients[clientID].ready = True
-        print("client ", clientID, " ready.")
-        p = 1
+    clientID = idCount
 
-    start_new_thread(threaded_client, (conn, p, clientID))
+    start_new_thread(threaded_client, (conn, clientID))

@@ -30,20 +30,6 @@ class AirQualityMonitor():
             "pm2.5": self.pmtwo,
             "pm10": self.pmten,
             "aqi": self.aqi,
-        }
+    }
         
-        return {
-            'time': int(time.time()),
-            'measurement': self.meas
-        }
-
-    def save_measurement_to_redis(self):
-        """Saves measurement to redis db"""
-        redis_client.lpush('measurements', json.dumps(self.get_measurement(), default=str))
-
-    def get_last_n_measurements(self):
-        """Returns the last n measurements in the list"""
-        return [json.loads(x) for x in redis_client.lrange('measurements', 0, -1)]
-    
-
-
+        return self.meas

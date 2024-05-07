@@ -92,6 +92,7 @@ class AQMController():
             current_time = datetime.datetime.now()
             
             if current_time.second % 10 == 0 and current_time.microsecond < 100:  # Check if it's a 10-second interval
+                print("here")
                 if len(self.data_entries) == DATA_MAXLEN:
                     self.data_entries.pop(0)
                     self.data_entries.append(self.aqm.get_measurement())

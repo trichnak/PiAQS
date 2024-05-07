@@ -1,5 +1,3 @@
-test
-
 import datetime
 from AirQualityMonitor import AirQualityMonitor 
 import csv

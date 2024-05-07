@@ -1,6 +1,6 @@
-import json
+# This script adapted from https://github.com/rydercalmdown/pi_air_quality_monitor.git AirQualityMonitor.py
+
 import os
-import time
 import datetime
 import serial
 import redis

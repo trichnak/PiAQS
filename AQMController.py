@@ -66,6 +66,7 @@ class AQMController():
             return
 
         if len(data_to_avg) < data_to_avg_maxlen:  # If data list is not at maximum length, use current length to calculate average
+            print(len(data_to_avg))
             averager = len(data_to_avg)
         else:
             averager = data_to_avg_maxlen

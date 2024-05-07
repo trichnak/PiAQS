@@ -1,3 +1,5 @@
+test
+
 import datetime
 from AirQualityMonitor import AirQualityMonitor 
 import csv
@@ -66,7 +68,6 @@ class AQMController():
             return
 
         if len(data_to_avg) < data_to_avg_maxlen:  # If data list is not at maximum length, use current length to calculate average
-            print(len(data_to_avg))
             averager = len(data_to_avg)
         else:
             averager = data_to_avg_maxlen
@@ -93,10 +94,13 @@ class AQMController():
             current_time = datetime.datetime.now()
             
             if current_time.second % 10 == 0 and current_time.microsecond < 100:  # Check if it's a 10-second interval
+                print(self.data_entries)
                 if len(self.data_entries) == DATA_MAXLEN:
                     self.data_entries.pop(0)
-                    self.data_entries.append(self.aqm.get_measurement())
-                    self.write_data(DATA_FILE,self.data_entries)
+                self.data_entries.append(self.aqm.get_measurement())
+                
+                self.write_data(DATA_FILE,self.data_entries)
+                    
 
                 if current_time.second == 0:  # Check if it's a 1-minute interval
                     print(current_time.hour,':',current_time.minute)

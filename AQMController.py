@@ -92,21 +92,20 @@ class AQMController():
             current_time = datetime.datetime.now()
             
             if current_time.second % 10 == 0 and current_time.microsecond < 100:  # Check if it's a 10-second interval
-                print("here")
                 if len(self.data_entries) == DATA_MAXLEN:
                     self.data_entries.pop(0)
                     self.data_entries.append(self.aqm.get_measurement())
                     self.write_data(DATA_FILE,self.data_entries)
 
-                    if current_time.second == 0:  # Check if it's a 1-minute interval
-                        print(current_time.hour,':',current_time.minute)
-                        self.minute_avg = self.calculate_avg(self.data_entries[-6:], DATA_MAXLEN, self.minute_avg, MINUTE_MAXLEN)
-                        self.write_data(MINUTE_FILE,self.minute_avg)
+                if current_time.second == 0:  # Check if it's a 1-minute interval
+                    print(current_time.hour,':',current_time.minute)
+                    self.minute_avg = self.calculate_avg(self.data_entries[-6:], DATA_MAXLEN, self.minute_avg, MINUTE_MAXLEN)
+                    self.write_data(MINUTE_FILE,self.minute_avg)
 
-                        if current_time.minute == 0:  # Check if it's a 1-hour interval
-                            self.hour_avg = self.calculate_avg(self.minute_avg, MINUTE_MAXLEN, self.hour_avg, HOUR_MAXLEN)
-                            self.write_data(HOUR_FILE,self.hour_avg)
+                    if current_time.minute == 0:  # Check if it's a 1-hour interval
+                        self.hour_avg = self.calculate_avg(self.minute_avg, MINUTE_MAXLEN, self.hour_avg, HOUR_MAXLEN)
+                        self.write_data(HOUR_FILE,self.hour_avg)
 
-                            if current_time.hour == 0:  # Check if it's a 1-day interval
-                                self.day_avg = self.calculate_avg(self.hour_avg, HOUR_MAXLEN, self.day_avg, DAY_MAXLEN)
-                                self.write_data(DAY_FILE,self.day_avg)
+                        if current_time.hour == 0:  # Check if it's a 1-day interval
+                            self.day_avg = self.calculate_avg(self.hour_avg, HOUR_MAXLEN, self.day_avg, DAY_MAXLEN)
+                            self.write_data(DAY_FILE,self.day_avg)
